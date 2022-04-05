@@ -4,18 +4,45 @@ body {
     min-height: 100vh;
     padding: 0%;
     margin: 0%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    display: grid;
+    grid-template: 1fr repeat(8, 10vh) 1fr / 1fr repeat(8, 10vh) 1fr;
+    color: aliceblue
 }
 
 #chessBoard {
-    min-width: 80vh;
-    min-height: 80vh;
+    /* min-width: 80vh;
+    min-height: 80vh; */
+    grid-area: 2 / 2 / 9 / 9;
     display: grid;
     grid-template: repeat(8, 1fr)/repeat(8, 1fr);
     background-color: aliceblue;
     color: black;
+}
+
+#colLabels {
+    grid-area: 1/2/1/9;
+    display: grid;
+    grid-template: 1fr/repeat(8, 1fr);
+}
+
+#rowLabels {
+    grid-area: 2/1/9/1;
+    display: grid;
+    grid-template: repeat(8, 1fr) /1fr;
+}
+
+.colLabel {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    padding: 1vh;
+}
+
+.rowLabel {
+    display: flex;
+    justify-content: right;
+    align-items: center;
+    padding: 1vh;
 }
 
 .cell {
