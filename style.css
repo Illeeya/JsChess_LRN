@@ -55,3 +55,9 @@ body {
     background-color: rgb(49, 49, 49);
     color: aliceblue;
 }
+
+.chessPiece {
+    display: block;
+    width: 90%;
+    height: 90%;
+}
