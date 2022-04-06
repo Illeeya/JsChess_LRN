@@ -2,8 +2,9 @@
 const CHESSBOARD = document.getElementById("chessBoard");
 const COL_LABELS = document.getElementById("colLabels");
 const ROW_LABELS = document.getElementById("rowLabels");
-const SELECTED_PIECE_ID = "";
-const CURRENT_PIECE_FIELD = "";
+let selectedPieceId = "";
+let currentPieceFieldId = "";
+let targetFieldId = "";
 
 const MAKE_LABELS = function (row, col) {
 	const COL_NAME = document.createElement("div");
@@ -69,18 +70,16 @@ const FIGURES = {
 };
 
 const SELECT_PIECE = function (pieceId) {
-	SELECTED_PIECE_ID = document.getElementById(SELECTED_PIECE_ID);
+	selectedPieceId = document.getElementById(selectedPieceId);
+	console.log(selectedPieceId);
 };
 
-const MOVE_PIECE_TO_FIELD = function (id) {
-	const PIECE = document.getElementById(SELECTED_PIECE_ID);
-};
+const MOVE_PIECE_TO_FIELD = function () {};
 
-const SELECT_TARGET_FIELD = function (id) {
-	if (SELECTED_PIECE_ID != "") {
-	}
-	{
-		MOVE_PIECE_TO_FIELD(id);
+const SELECT_TARGET_FIELD = function (fieldId) {
+	if (selectedPieceId != "") {
+		targetFieldId = fieldId;
+		MOVE_PIECE_TO_FIELD();
 	}
 };
 
@@ -93,6 +92,9 @@ const POPULATE_CHESSBOARD = function () {
 			const figureName = FIGURES[ID];
 			IMG.src = `img\\${figureName}`;
 			IMG.classList.add("chessPiece");
+			IMG.id = ID + figureName;
+			IMG.addEventListener("click", SELECT_PIECE(IMG.id));
+
 			CELL.appendChild(IMG.cloneNode(true));
 		}
 		if (i == 7) {
