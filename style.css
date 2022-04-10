@@ -61,3 +61,7 @@ body {
     width: 90%;
     height: 90%;
 }
+
+.selected {
+    background-color: aquamarine;
+}
