@@ -1,0 +1,22 @@
+function populateChessboard() {
+    for (let i = 8; i >= 1; i--) {
+        for (let j = 1; j <= 8; j++) {
+            const ID = String.fromCharCode(64 + j) + i.toString();
+            const _figureName = FIGURES[ID];
+            putPieceOnCell(ID, _figureName);
+            // const CELL = document.getElementById(ID);
+            // const IMG = document.createElement('img');
+            // IMG.src = `img\\${figureName.slice(0, -1)}.png`;
+            // IMG.classList.add('chessPiece');
+            // IMG.id = ID + figureName;
+            // CELL.appendChild(IMG.cloneNode(true));
+            // // CELL.firstChild.addEventListener('click', () => {
+            // //     selector(CELL.id)
+            // // });
+            // CHESS_PIECES_LIST[ID] = figureName;
+        }
+        if (i == 7) {
+            i = 3;
+        }
+    }
+}
