@@ -42,21 +42,21 @@ const FIGURES = {
 const CHESS_FIELDS_LIST = {};
 const CHESS_PIECES_LIST = {};
 
-// CHESS OBJECT
-
-class ChessPiece {
-    constructor(id, placementCellId) {
-        this.id = id;
-        this.placement = placementCellId;
-        this.parent = CHESS_FIELDS_LIST[placementCellId];
-    }
-}
-
 // VARIABLES
 let selectedPiece = '';
 let selectedField = '';
 let currentPieceFieldId = '';
 let targetFieldId = '';
+
+// OBJECTS
+class ChessPiece {
+    constructor(node, name, currentPosition, isSelected) {
+        this.node = node;
+        this.name = name;
+        this.currentPosition = currentPosition;
+        this.isSelected = isSelected;
+    }
+}
 
 // BOARD BUILDING METHODS
 
@@ -88,7 +88,7 @@ function makeChessboard() {
                 selector(CELL.id);
             });
             CHESS_FIELDS_LIST[CELL.id] = document.getElementById(CELL.id);
-            //CHESS_PIECES_LIST[CELL.id] = '';
+            CHESS_PIECES_LIST[CELL.id] = '';
         }
     }
 }
@@ -97,7 +97,8 @@ function populateChessboard() {
     for (let i = 8; i >= 1; i--) {
         for (let j = 1; j <= 8; j++) {
             const ID = String.fromCharCode(64 + j) + i.toString();
-            createPiece(CHESS_FIELDS_LIST[ID], FIGURES[ID]);
+            const _figureName = FIGURES[ID];
+            putPieceOnCell(ID, _figureName);
         }
         if (i == 7) {
             i = 3;
@@ -105,66 +106,60 @@ function populateChessboard() {
     }
 }
 
-function createPiece(cellToPutPieceOn, pieceName) {
-    const CELL = cellToPutPieceOn;
-
-    const IMG = document.createElement('img');
-    IMG.src = `img\\${pieceName.slice(0, -1)}.png`;
-    IMG.classList.add('chessPiece');
-    IMG.id = CELL.id + pieceName;
-    CELL.appendChild(IMG.cloneNode(true));
-    CHESS_PIECES_LIST[CELL.id] = CELL.childNodes[0];
-}
-
-function selector(fieldId) {
-    let isTargetFieldAnObject = typeof CHESS_PIECES_LIST[fieldId] == 'object';
-
-    if (selectedField.id == fieldId) {
-        console.log(`Same field`);
+function putPieceOnCell(cellId, figureNode) {
+    const CELL = document.getElementById(cellId);
+    if (typeof figureNode == 'string') {
+        const IMG = document.createElement('img');
+        IMG.src = `img\\${figureNode.slice(0, -1)}.png`;
+        IMG.classList.add('chessPiece');
+        IMG.id = cellId + figureNode;
+        CELL.appendChild(IMG.cloneNode(true));
+        CHESS_PIECES_LIST[cellId] = CELL.childNodes[0];
+    } else if (typeof figureNode == 'object') {
+        CELL.appendChild(figureNode.cloneNode(true));
+        CHESS_PIECES_LIST[cellId] = figureNode;
     } else {
-        if (!isTargetFieldAnObject) {
-            if (selectedPiece) {
-                console.log(`Will move the ${selectedPiece} piece to ${fieldId}`);
-                deselector();
-            }
-        }
-        if (isTargetFieldAnObject) {
-            if (!selectedPiece) {
-                selectedField = CHESS_FIELDS_LIST[fieldId];
-                selectedPiece = CHESS_PIECES_LIST[fieldId];
-                selectedField.classList.add('selected');
-                console.log(`Will select a piece.`);
-            } else {
-                console.log(
-                    `Will test for collision between ${selectedPiece.id} and ${CHESS_PIECES_LIST[fieldId].id}`
-                );
-                pieceCollision(CHESS_PIECES_LIST[fieldId], fieldId);
-                deselector();
-            }
-        }
+        console.log('Error, figureNode neither string nor object');
     }
 }
 
-function pieceCollision(targetPiece, fieldId) {
-    let _targetPiece = targetPiece;
-    let _selectedPiece = selectedPiece;
-
-    CHESS_PIECES_LIST[selectedField.id] = '';
-    CHESS_PIECES_LIST[fieldId] = _selectedPiece;
-
-    console.log(
-        `Piece: ${_selectedPiece} and it's parent node? ${_selectedPiece.parentElement}`
-    );
-
-    _selectedPiece.parentElement.removeChild(_selectedPiece);
-    _targetPiece.parentElement.appendChild(_selectedPiece);
-    _targetPiece.parentElement.removeChild(_targetPiece);
+function deletePiece(cellId) {
+    CHESS_PIECES_LIST[cellId].parentNode.removeChild(CHESS_PIECES_LIST[cellId]);
 }
 
-function deselector() {
-    selectedField.classList.remove('selected');
-    selectedField = '';
-    selectedPiece = '';
+// MECHANICS
+
+function movePiece(targetFieldId) {
+    CHESS_PIECES_LIST[selectedField.id] = '';
+    putPieceOnCell(targetFieldId, selectedPiece);
+    const _selectedFieldChild = selectedField.firstChild;
+    _selectedFieldChild.parentNode.removeChild(_selectedFieldChild);
+}
+
+function selector(fieldId) {
+    if (selectedPiece == '' && CHESS_PIECES_LIST[fieldId] != '') {
+        selectedPiece = CHESS_PIECES_LIST[fieldId];
+        console.log(`Selected piece - ${selectedPiece.id}`);
+        selectedField = CHESS_FIELDS_LIST[fieldId];
+        selectedField.classList.add('selected');
+    } else if (selectedField.id == fieldId) {
+        console.log('Same field');
+    } else if (selectedPiece != '' && CHESS_PIECES_LIST[fieldId] == '') {
+        targetFieldId = fieldId;
+        movePiece(fieldId);
+        console.log(`Will move piece ${selectedPiece} to the ${fieldId} field`);
+        selectedField.classList.remove('selected');
+        selectedPiece = '';
+        selectedField = '';
+        targetFieldId = '';
+    } else if (CHESS_PIECES_LIST[fieldId] != '') {
+        console.log('Will test for collision possibility');
+        deletePiece(fieldId);
+        movePiece(fieldId);
+        selectedField.classList.remove('selected');
+        selectedPiece = '';
+        selectedField = '';
+    }
 }
 
 makeChessboard();
