@@ -136,6 +136,19 @@ function movePiece(targetFieldId) {
     _selectedFieldChild.parentNode.removeChild(_selectedFieldChild);
 }
 
+function pieceCollision(fieldId) {
+    let _targetField = CHESS_FIELDS_LIST[fieldId];
+    let _targetPiece = CHESS_PIECES_LIST[fieldId];
+    let _selectedPiece = selectedPiece;
+    let _selectedField = selectedField;
+
+    _targetField.appendChild(_selectedPiece);
+    _targetField.removeChild(_targetPiece);
+
+    CHESS_PIECES_LIST[_selectedField.id] = '';
+    CHESS_PIECES_LIST[fieldId] = _selectedPiece;
+}
+
 function selector(fieldId) {
     if (selectedPiece == '' && CHESS_PIECES_LIST[fieldId] != '') {
         selectedPiece = CHESS_PIECES_LIST[fieldId];
