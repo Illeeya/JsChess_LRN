@@ -1,5 +1,6 @@
 body {
-    background-color: black;
+    background: rgb(9, 30, 32);
+    background: linear-gradient( 11deg, rgba(9, 30, 32, 1) 0%, rgba(0, 0, 0, 1) 15%, rgba(0, 0, 0, 1) 17%, rgba(0, 0, 0, 1) 85%, rgba(9, 30, 32, 1) 100%);
     min-width: 100vw;
     min-height: 100vh;
     padding: 0%;
@@ -7,12 +8,13 @@ body {
     display: grid;
     grid-template: 1fr repeat(8, 10vh) 1fr / 1fr repeat(8, 10vh) 1fr;
     color: aliceblue;
+    font-family: 'Arial Black', 'Courier New', Courier, monospace;
 }
 
 #chessBoard {
     /* min-width: 80vh;
     min-height: 80vh; */
-    grid-area: 2 / 2 / 9 / 9;
+    grid-area: 2 / 2 / 10 / 10;
     display: grid;
     grid-template: repeat(8, 1fr) / repeat(8, 1fr);
     background-color: aliceblue;
@@ -20,13 +22,13 @@ body {
 }
 
 #colLabels {
-    grid-area: 1/2/1/9;
+    grid-area: 1/2/1/10;
     display: grid;
     grid-template: 1fr / repeat(8, 1fr);
 }
 
 #rowLabels {
-    grid-area: 2/1/9/1;
+    grid-area: 2/1/10/1;
     display: grid;
     grid-template: repeat(8, 1fr) / 1fr;
 }
@@ -45,6 +47,44 @@ body {
     padding: 1vh;
 }
 
+#moveLabel1 {
+    display: flex;
+    vertical-align: middle;
+    justify-content: center;
+    align-items: center;
+    padding: 1vh;
+    grid-area: 5/ 10 / 6 / 10;
+}
+
+#gameWon {
+    display: flexbox;
+    vertical-align: middle;
+    text-align: center;
+    font-size: 5vh;
+    justify-content: center;
+    align-items: center;
+    padding: 1vh;
+    grid-area: 5/ 2 / 7 / 10;
+    transform: scale(0);
+}
+
+.gameWonButton {
+    color: black;
+    background-color: darkgrey;
+}
+
+#moveLabel2 {
+    display: flex;
+    font-size: 5vh;
+    font-weight: bolder;
+    vertical-align: middle;
+    justify-content: center;
+    align-items: center;
+    padding: 1vh;
+    grid-area: 6 / 10 /7 / 10;
+    -webkit-text-stroke: 1px black;
+}
+
 .cell {
     display: flex;
     justify-content: center;
@@ -53,7 +93,7 @@ body {
 }
 
 .cellA {
-    background-color: rgb(121, 121, 121);
+    background-color: rgb(61, 61, 61);
     color: aliceblue;
 }
 

@@ -3,8 +3,19 @@
 const CHESSBOARD = document.getElementById('chessBoard');
 const COL_LABELS = document.getElementById('colLabels');
 const ROW_LABELS = document.getElementById('rowLabels');
+const MOVE_LABEL = document.getElementById('moveLabel2');
+const GAME_WON = document.getElementById('gameWon');
+let turn = 'white';
+MOVE_LABEL.innerText = turn.toUpperCase();
 
-const VARIABLES = {};
+function changeWhoMoves() {
+    MOVE_LABEL.style.webkitTextStroke = `1px ${turn}`;
+    turn == 'white' ? (turn = 'black') : (turn = 'white');
+    MOVE_LABEL.innerText = turn.toUpperCase();
+    MOVE_LABEL.style.color = turn;
+}
+
+// const VARIABLES = {};
 
 const FIGURES = {
     A8: 'blackTower1'
@@ -41,10 +52,14 @@ const FIGURES = {
     , H2: 'whitePawn8'
 , };
 
+// VARIABLES
+let selectedPiece = '';
+let selectedField = '';
+let targetFieldId = '';
 const CHESS_FIELDS_LIST = {};
+let CHESS_PIECES_ARRAY = [];
 //let possibleFieldsList = [];
 //const CHESS_PIECES_LIST = {};
-const CHESS_PIECES_ARRAY = [];
 
 // // CHESS OBJECT
 
@@ -61,24 +76,19 @@ class ChessPiece {
     }
 
     changeField(fieldId) {
-        console.log(`Before: ${this.placement}`);
+        //console.log(`Before: ${this.placement}`);
         this.placement = fieldId;
-        console.log(`After: ${this.placement}`);
+        //console.log(`After: ${this.placement}`);
         this.parent = CHESS_FIELDS_LIST[this.placement];
         this.col = fieldId.slice(0, 1);
         this.row = fieldId.slice(1, 2);
-        console.log(`Col: ${this.col}  Row: ${this.row}`);
+        //console.log(`Col: ${this.col}  Row: ${this.row}`);
     }
 
     addImgNode(node) {
         this.imgNode = node;
     }
 }
-
-// VARIABLES
-let selectedPiece = '';
-let selectedField = '';
-let targetFieldId = '';
 
 // BOARD BUILDING METHODS
 
@@ -131,7 +141,7 @@ function createPieceObjects() {
 
     function createPiece(cellToPutPieceOn, pieceName) {
         const CELL = CHESS_FIELDS_LIST[cellToPutPieceOn];
-        console.log(CELL.id);
+        //console.log(CELL.id);
         const IMG = document.createElement('img');
         IMG.src = `img\\${pieceName}.png`;
         IMG.classList.add('chessPiece');
@@ -171,7 +181,7 @@ function selector(fieldid) {
 
     if (selectedField == fieldid) {
         deselector();
-    } else if (pieceOnField && isStringEmpty(selectedPiece)) {
+    } else if (pieceOnField && isStringEmpty(selectedPiece) && pieceOnField.color == turn) {
         console.log(`Select piece`);
         selectedField = fieldid;
         selectedPiece = CHESS_PIECES_ARRAY.find((piece) => piece.placement == fieldid);
@@ -195,10 +205,12 @@ function deselector() {
 }
 
 function moveChess(toTheField) {
+    let hitFigure = '';
     if (selectedPiece.possibleMoves.includes(toTheField)) {
         let pieceOnTarget = CHESS_PIECES_ARRAY.find((piece) => piece.placement == toTheField);
         if (!(pieceOnTarget && pieceOnTarget.color == selectedPiece.color)) {
             if (pieceOnTarget) {
+                hitFigure = pieceOnTarget.figure;
                 //COLLISION
 
                 CHESS_FIELDS_LIST[toTheField].removeChild(pieceOnTarget.imgNode);
@@ -206,9 +218,36 @@ function moveChess(toTheField) {
             }
             CHESS_FIELDS_LIST[toTheField].appendChild(selectedPiece.imgNode);
             selectedPiece.changeField(toTheField);
+            if (hitFigure == 'king') {
+                console.log(hitFigure);
+                console.log(selectedPiece.color);
+                gameWon(selectedPiece.color);
+            }
             deselector();
+            changeWhoMoves();
         }
     }
+}
+
+function gameWon(color) {
+    console.log(`test`);
+    const offColor = color == 'white' ? 'black' : 'white';
+    GAME_WON.innerHTML = `<div>Game won by ${color.toUpperCase()}</div>`;
+    GAME_WON.style.color = offColor;
+    GAME_WON.style.backgroundColor = color;
+    GAME_WON;
+    const BTN = document.createElement('button');
+    BTN.onclick = restartGame;
+    BTN.style.all = 'revert';
+    BTN.style.backgroundColor = offColor;
+    BTN.style.minWidth = '80%';
+    BTN.style.minHeight = '30%';
+    BTN.style.fontSize = 'large';
+    BTN.style.fontFamily = 'Arial Black';
+    BTN.style.color = color;
+    BTN.textContent = 'RESTART GAME';
+    GAME_WON.appendChild(BTN);
+    GAME_WON.style.transform = 'scale(1)';
 }
 
 function generatePossibleMoveFields(chessPiece) {
@@ -262,12 +301,12 @@ function generatePossibleMoveFields(chessPiece) {
             row--;
         } else {
             row++;
-            console.log(row);
+            //console.log(row);
         }
         fieldToPush = String.fromCharCode(col - 1) + row;
-        console.log(fieldToPush);
+        //console.log(fieldToPush);
         if (isFieldTaken(fieldToPush) && isFieldTaken(fieldToPush).color != chessPiece.color) {
-            console.log(`test`);
+            //console.log(`test`);
             chessPiece.possibleMoves.push(fieldToPush);
         }
         fieldToPush = String.fromCharCode(col + 1) + row;
@@ -319,7 +358,7 @@ function generatePossibleMoveFields(chessPiece) {
         _row = row + 1;
         while (_col >= 65 && _row <= 8) {
             fieldToPush = String.fromCharCode(_col) + _row;
-            console.log(fieldToPush);
+            //console.log(fieldToPush);
             if (breakMovement(fieldToPush)) break;
             else {
                 chessPiece.possibleMoves.push(fieldToPush);
@@ -369,7 +408,7 @@ function generatePossibleMoveFields(chessPiece) {
         _row = row + 1;
         while (_col >= 65 && _row <= 8) {
             fieldToPush = String.fromCharCode(_col) + _row;
-            console.log(fieldToPush);
+            //console.log(fieldToPush);
             if (breakMovement(fieldToPush)) break;
             else {
                 chessPiece.possibleMoves.push(fieldToPush);
@@ -459,7 +498,7 @@ function generatePossibleMoveFields(chessPiece) {
                 if (i == 0 && j == 0) continue;
                 _row = row + i;
                 _col = col + j;
-                if (_col < 65 || _col > 72 || _row < 1 || row > 8) continue;
+                if (_col < 65 || _col > 72 || _row < 1 || _row > 8) continue;
                 fieldToPush = String.fromCharCode(_col) + _row;
                 if (breakMovement(fieldToPush)) continue;
                 else {
@@ -510,7 +549,6 @@ function generatePossibleMoveFields(chessPiece) {
     default:
         break;
     }
-
     chessPiece.possibleMoves.forEach((field) => {
         if (CHESS_FIELDS_LIST[field].classList.contains('cellA')) {
             CHESS_FIELDS_LIST[field].classList.add('possibleMoveA');
@@ -533,3 +571,27 @@ function isStringEmpty(string) {
 
 makeChessboard();
 createPieceObjects();
+//gameWon('white');
+
+function restartGame() {
+    Object.values(CHESS_FIELDS_LIST).forEach((element) => {
+        //console.log(element);
+        while (element.firstChild) {
+            element.removeChild(element.firstChild);
+        }
+    });
+    GAME_WON.childNodes.forEach((node) => {
+        GAME_WON.removeChild(node);
+    });
+    MOVE_LABEL.style.webkitTextStroke = `1px ${turn}`;
+    turn = 'white';
+    MOVE_LABEL.style.color = turn;
+    MOVE_LABEL.innerText = turn.toUpperCase();
+    GAME_WON.style.transform = 'scale(0)';
+    selectedPiece = '';
+    selectedField = '';
+    targetFieldId = '';
+    CHESS_PIECES_ARRAY = [];
+
+    createPieceObjects();
+}
